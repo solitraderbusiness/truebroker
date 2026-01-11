@@ -25,10 +25,26 @@ model Subscription {
   id                String   @id @default(uuid())
   userId            String   @unique
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stripeCustomerId  String   @unique
+  stripeCustomerId  String?  @unique
   stripeSubscriptionId String? @unique
+  paymentMethod     String   @default("stripe") // stripe, crypto
   status            String   // active, canceled, past_due, trialing
   currentPeriodEnd  DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model CryptoPayment {
+  id                String   @id @default(uuid())
+  userId            String
+  paymentAddress    String   @unique
+  amount            Float
+  currency          String   @default("USDT")
+  network           String   @default("TRC20")
+  status            String   @default("pending") // pending, verified, expired
+  txHash            String?
+  expiresAt         DateTime
+  verifiedAt        DateTime?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
