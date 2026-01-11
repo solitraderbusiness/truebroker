@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  password          String
+  name              String?
+  telegramUsername  String?
+  telegramChatId    String?
+  isAdmin           Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  subscription      Subscription?
+}
+
+model Subscription {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeCustomerId  String   @unique
+  stripeSubscriptionId String? @unique
+  status            String   // active, canceled, past_due, trialing
+  currentPeriodEnd  DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Signal {
+  id          String   @id @default(uuid())
+  type        String   // BUY, SELL
+  asset       String   // BTC/USD, EUR/USD, etc.
+  market      String   // crypto, forex
+  entryPrice  Float
+  stopLoss    Float?
+  takeProfit  Float?
+  leverage    String?
+  notes       String?
+  status      String   @default("active") // active, closed
+  result      String?  // win, loss, breakeven
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdminSettings {
+  id                  String   @id @default(uuid())
+  telegramBotToken    String?
+  stripePublicKey     String?
+  stripeSecretKey     String?
+  subscriptionPrice   Float    @default(29)
+  updatedAt           DateTime @updatedAt
+}
