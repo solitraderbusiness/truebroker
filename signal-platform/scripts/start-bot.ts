@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { startTelegramBot } from '../lib/telegram'
 
 console.log('Starting Telegram bot...')
